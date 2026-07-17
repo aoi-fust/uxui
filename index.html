@@ -2,217 +2,468 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Grow Pass - Dashboard</title>
 
+    <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
-        /* スムーズスクロール */
-        html {
-            scroll-behavior: smooth;
+        :root {
+            /* Grow Pass ナチュラルカラーパレット */
+            --grow-bg: #f5f4eb;       /* 優しいアイボリー */
+            --grow-card: #ffffff;
+            --grow-green-dark: #3a5f43; /* 深いフォレストグリーン */
+            --grow-green-light: #68a357; /* 若葉のグリーン */
+            --grow-earth: #8d7b68;      /* 土のブラウン */
+            --grow-yellow: #f4d160;     /* 太陽のイエロー */
+            --grow-text: #2d332f;       /* ダークチャコール */
+            --nav-height: 65px;
         }
 
-        /* Navbarにコンテンツが隠れないようにする設定 */
-        section {
-            scroll-margin-top: 70px;
-            min-height: 400px;
+        body {
+            background-color: var(--grow-bg);
+            color: var(--grow-text);
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            overflow-x: hidden;
+            user-select: none;
         }
 
-        /* カレンダーの土日の色を設定するカスタムCSS */
-        .table th:nth-child(1), .table td:nth-child(1) { color: red; }    /* 日曜日 */
-        .table th:nth-child(7), .table td:nth-child(7) { color: blue; }   /* 土曜日 */
-        .today { background-color: #e2f0d9 !important; font-weight: bold; } /* 今日 */
-
-        /* カレンダーのセル調整 */
-        .calendar-cell {
-            cursor: pointer;
-            position: relative;
-            height: 60px;
-            vertical-align: top;
-        }
-        .calendar-cell:hover {
-            background-color: #f8f9fa;
-        }
-        .schedule-dot {
-            font-size: 10px;
-            color: #2ecc71;
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        /* 目標管理アプリ用のスタイル */
-        .goal-container {
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 100%;
+        /* アプリ風のコンテナ制限 */
+        .app-container {
             max-width: 500px;
             margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
         }
-        .hidden {
-            display: none !important;
+
+        /* 画面切り替えアニメーション */
+        .app-page {
+            display: none;
+            padding: 10px 16px;
         }
-        .custom-nav-link {
-            color: #3498db;
-            text-decoration: none;
+        .app-page.active {
+            display: block;
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* オーガニック風の丸みのあるカード */
+        .app-card {
+            background: var(--grow-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(141, 123, 104, 0.08);
+            border: 1px solid rgba(141, 123, 104, 0.1);
+        }
+
+        /* Growイラストレーション風ヘッダー（CSS/SVGアート） */
+        .grow-header-art {
+            background: linear-gradient(to bottom, #eef5ed, #e5efe3);
+            border-radius: 20px 20px 0 0;
+            margin: -20px -20px 20px -20px;
+            padding: 24px 16px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border-bottom: 4px solid var(--grow-green-light);
+        }
+
+        .grow-logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--grow-green-dark);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grow-logo-text span {
+            color: var(--grow-green-light);
+        }
+
+        /* 太陽の光アニメーション */
+        .sun-icon {
+            color: var(--grow-yellow);
+            display: inline-block;
+            margin-left: 4px;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* 双葉と大地のイラストエリア */
+        .sprout-container {
+            position: relative;
+            height: 110px;
+            margin-top: 10px;
+        }
+        .sprout-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* カスタムボタン */
+        .btn-grow-primary {
+            background-color: var(--grow-green-light);
+            border: none;
+            color: white;
             font-weight: bold;
-            cursor: pointer;
+            border-radius: 30px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 8px rgba(104, 163, 87, 0.3);
+            transition: all 0.2s ease;
         }
-        .custom-nav-link:hover {
-            text-decoration: underline;
+        .btn-grow-primary:active {
+            background-color: var(--grow-green-dark);
+            transform: scale(0.98);
         }
-        /* 表示された目標のスタイル */
-        .display-goal-box {
-            background-color: #f8f9fa;
-            border-left: 5px solid #2ecc71;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: left;
+
+        .btn-grow-secondary {
+            background-color: #f0ede4;
+            border: 1px solid rgba(141, 123, 104, 0.2);
+            color: var(--grow-earth);
+            font-weight: bold;
+            border-radius: 30px;
         }
-        /* タイムラインスタイル */
+
+        /* ボトムナビゲーションバー */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(141, 123, 104, 0.15);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1050;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 12px rgba(141, 123, 104, 0.05);
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            text-align: center;
+            background: none;
+            border: none;
+            color: #a49e93;
+            padding: 6px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .bottom-nav-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+            transition: transform 0.2s ease;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--grow-green-light);
+        }
+        .bottom-nav-item.active i {
+            transform: scale(1.15);
+        }
+
+        /* カレンダー */
+        .table-calendar {
+            table-layout: fixed;
+            width: 100%;
+            margin: 0;
+        }
+        .table-calendar th {
+            font-size: 13px;
+            font-weight: bold;
+            padding: 10px 0;
+            border: none;
+            background-color: #f7f6f0 !important;
+            color: var(--grow-earth);
+        }
+        .table-calendar td {
+            height: 55px;
+            vertical-align: middle;
+            position: relative;
+            border: 1px solid #f2eedf;
+            padding: 4px !important;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        .table-calendar th:nth-child(1), .table-calendar td:nth-child(1) .calendar-date-num { color: #d9534f; }
+        .table-calendar th:nth-child(7), .table-calendar td:nth-child(7) .calendar-date-num { color: #337ab7; }
+
+        .today .calendar-date-num {
+            background-color: var(--grow-green-light);
+            color: #ffffff !important;
+            width: 26px;
+            height: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(104, 163, 87, 0.4);
+        }
+
+        .schedule-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--grow-yellow);
+            border-radius: 50%;
+            margin: 4px auto 0;
+        }
+
+        /* タイムライン */
         .timeline-item {
-            border-left: 3px solid #3498db;
-            padding-left: 10px;
-            margin-bottom: 10px;
+            border-left: 3px solid var(--grow-green-light);
+            padding-left: 12px;
+            margin-bottom: 12px;
         }
+
+        /* バッジ、時計 */
+        .grow-badge {
+            background-color: #f0ede4;
+            color: var(--grow-earth);
+            border: 1px solid rgba(141, 123, 104, 0.2);
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">My Website</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav me-auto gap-2">
-                    <a class="nav-link" href="#calendar-section">Calendar</a>
-                    <a class="nav-link" href="#goal-section">goal</a> 
-                    <a class="nav-link" href="#gallery">Gallery</a>
-                    <a class="nav-link" href="#contact">Contact</a>
+    <div class="app-container">
+        
+        <!-- アプリヘッダー -->
+        <header class="d-flex justify-content-between align-items-center px-3 pt-4 pb-2">
+            <h1 class="h4 fw-bold m-0 text-success" id="page-title" style="color: var(--grow-green-dark) !important;">Goal</h1>
+            <div id="current-time" class="badge grow-badge rounded-pill px-3 py-2 fw-bold small"></div>
+        </header>
+
+        <!-- 【目標画面】 -->
+        <main id="page-goal" class="app-page active">
+            <!-- メイン画面 -->
+            <div id="main-screen" class="app-card text-center p-0 overflow-hidden">
+                <!-- Grow Passビジュアルアートヘッダー -->
+                <div class="grow-header-art">
+                    <div class="grow-logo-text">Gr<span>o</span>w<i class="bi bi-brightness-high-fill sun-icon"></i></div>
+                    <div class="small fw-bold text-muted">Pass</div>
+                    
+                    <!-- 双葉と根っこのSVGアニメーション -->
+                    <div class="sprout-container">
+                        <svg class="sprout-svg" viewBox="0 0 100 60" preserveAspectRatio="none">
+                            <!-- 土・地面 -->
+                            <path d="M 0,50 Q 50,40 100,50 L 100,60 L 0,60 Z" fill="#8d7b68" />
+                            <path d="M 0,50 Q 50,40 100,50" fill="none" stroke="#68a357" stroke-width="3" />
+                            <!-- 根っこ -->
+                            <path d="M 50,48 Q 50,53 45,58" fill="none" stroke="#e6dfd3" stroke-width="2" stroke-linecap="round" />
+                            <path d="M 50,48 Q 50,55 55,59" fill="none" stroke="#e6dfd3" stroke-width="2" stroke-linecap="round" />
+                            <path d="M 50,48 L 50,59" fill="none" stroke="#e6dfd3" stroke-width="2" stroke-linecap="round" />
+                            <!-- 茎 -->
+                            <path d="M 50,45 L 50,25" fill="none" stroke="#5b8c4d" stroke-width="4" stroke-linecap="round" />
+                            <!-- 左の葉 -->
+                            <path d="M 50,27 Q 35,15 28,24 Q 38,32 50,27 Z" fill="#7cb36d" />
+                            <!-- 右の葉 -->
+                            <path d="M 50,27 Q 65,15 72,24 Q 62,32 50,27 Z" fill="#68a357" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-4">
+                    <!-- 追加：「夢、目標」表示エリア -->
+                    <h2 class="h6 fw-bold mb-3" style="color: var(--grow-green-dark);"><i class="bi bi-trophy-fill text-warning me-2"></i>夢・人生の目標</h2>
+                    <div id="dream-display-area" class="my-3">
+                        <!-- JSで挿入 -->
+                    </div>
+
+                    <hr class="my-4" style="border-color: rgba(141, 123, 104, 0.15);">
+
+                    <h2 class="h6 fw-bold mb-3" style="color: var(--grow-green-dark);"><i class="bi bi-calendar-check-fill text-success me-2"></i>今日の目標</h2>
+                    <div id="goal-display-area" class="my-3">
+                        <!-- JSで挿入 -->
+                    </div>
+                    <button class="btn btn-grow-primary w-100 py-2.5 mt-2" onclick="showScreen('target-screen')">
+                        <i class="bi bi-pencil-fill me-1"></i>目標を設定・変更
+                    </button>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <div id="home" class="container mt-5 pt-3 text-center">
-        <h1>My Website</h1>
-    </div>
+            <!-- 目標設定画面 -->
+            <div id="target-screen" class="app-card hidden">
+                <h2 class="h5 fw-bold mb-4 text-center" style="color: var(--grow-green-dark);"><i class="bi bi-sliders me-2"></i>目標設定</h2>
+                <form id="goal-form" onsubmit="saveGoal(event)">
+                    <!-- 追加：「夢、目標」の入力項目 -->
+                    <div class="mb-3">
+                        <label for="dream-title" class="form-label small fw-bold text-muted">夢・人生の目標</label>
+                        <input type="text" id="dream-title" class="form-control form-control-lg fs-6" placeholder="例: 英語をマスターして海外で活躍する！" style="border-radius: 12px; border: 1px solid #dcdacb;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="goal-title" class="form-label small fw-bold text-muted">今日の目標タイトル</label>
+                        <input type="text" id="goal-title" class="form-control form-control-lg fs-6" placeholder="例: 毎朝30分読書をする" required style="border-radius: 12px; border: 1px solid #dcdacb;">
+                    </div>
+                    <div class="mb-4">
+                        <label for="goal-detail" class="form-label small fw-bold text-muted">具体的なアクション</label>
+                        <textarea id="goal-detail" class="form-control" rows="3" placeholder="例: 夜11時に寝て、朝6時に起きる" style="border-radius: 12px; border: 1px solid #dcdacb;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-grow-primary w-100 py-2.5 mb-2">保存する</button>
+                    <button type="button" class="btn btn-grow-secondary w-100 py-2.5 text-secondary" onclick="showScreen('main-screen')">キャンセル</button>
+                </form>
+            </div>
+        </main>
 
-    <section id="calendar-section" class="p-5 bg-white">
-        <div class="container" style="max-width: 700px;">
-            <h2 id="calendar-title" class="text-center mb-1">Calendar</h2>
-            <div id="current-time" class="text-center text-muted mb-4 fs-5 fw-bold"></div>
-            
-            <table class="table table-bordered text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>日</th>
-                        <th>月</th>
-                        <th>火</th>
-                        <th>水</th>
-                        <th>木</th>
-                        <th>金</th>
-                        <th>土</th>
-                    </tr>
-                </thead>
-                <tbody id="calendar-body">
-                </tbody>
-            </table>
+        <!-- 【カレンダー画面】 -->
+        <div id="page-calendar" class="app-page">
+            <div class="app-card p-3">
+                <div class="text-center py-2 fw-bold border-bottom mb-3" id="calendar-title" style="color: var(--grow-green-dark); font-size: 18px;">2026年 7月</div>
+                <table class="table table-calendar text-center">
+                    <thead>
+                        <tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr>
+                    </thead>
+                    <tbody id="calendar-body">
+                        <!-- JSで挿入 -->
+                    </tbody>
+                </table>
+            </div>
 
-            <div id="schedule-area" class="mt-4 p-4 border rounded bg-light d-none">
-                <h4 id="selected-date-title" class="mb-3">選択された日付</h4>
+            <!-- スケジュールエリア -->
+            <div id="schedule-area" class="app-card d-none">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h4 id="selected-date-title" class="h6 fw-bold m-0" style="color: var(--grow-green-dark);">📅 予定</h4>
+                    <button type="button" class="btn-close small" onclick="closeScheduleArea()"></button>
+                </div>
                 
-                <h5>予定一覧</h5>
-                <div id="schedule-list" class="mb-4"></div>
+                <div id="schedule-list" class="mb-3"></div>
 
-                <hr>
-
-                <h5>予定を追加</h5>
-                <form id="schedule-form" onsubmit="saveSchedule(event)">
+                <form id="schedule-form" onsubmit="saveSchedule(event)" class="border-top pt-3">
                     <div class="row g-2 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">時間</label>
-                            <input type="time" id="schedule-time" class="form-control" required>
+                        <div class="col-4">
+                            <input type="time" id="schedule-time" class="form-control form-control-sm" required style="border-radius: 8px;">
                         </div>
-                        <div class="col-md-8">
-                            <label class="form-label small fw-bold">予定内容</label>
-                            <input type="text" id="schedule-text" class="form-control" placeholder="例: ミーティング" required>
+                        <div class="col-8">
+                            <input type="text" id="schedule-text" class="form-control form-control-sm" placeholder="新しい予定" required style="border-radius: 8px;">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">予定を保存</button>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeScheduleArea()">閉じる</button>
+                    <button type="submit" class="btn btn-grow-primary btn-sm w-100">予定を追加</button>
                 </form>
             </div>
         </div>
-    </section>
 
-    <section id="goal-section" class="p-5 bg-light border-top border-bottom">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="goal-container">
-                        
-                        <div id="main-screen">
-                            <h2>今日の目標</h2>
-                            <p class="text-muted">今日も目標に向かって頑張りましょう！</p>
-                            
-                            <div id="goal-display-area" class="my-4">
-                            </div>
-
-                            <hr>
-                            <p class="mb-0">👉 <a class="custom-nav-link" onclick="showScreen('target-screen')">目標を設定・変更する</a></p>
-                        </div>
-
-                        <div id="target-screen" class="hidden">
-                            <h2>目標設定</h2>
-                            <p class="text-muted">あなたの新しい目標を入力してください。</p>
-                            
-                            <form id="goal-form" onsubmit="saveGoal(event)">
-                                <div class="mb-3 text-start">
-                                    <label for="goal-title" class="form-label fw-bold">目標タイトル</label>
-                                    <input type="text" id="goal-title" class="form-control" placeholder="例: 毎朝30分読書をする" required>
-                                </div>
-                                <div class="mb-3 text-start">
-                                    <label for="goal-detail" class="form-label fw-bold">具体的なアクション</label>
-                                    <textarea id="goal-detail" class="form-control" rows="4" placeholder="例: 夜11時に寝て、朝6時に起きる"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success w-100">目標を保存する</button>
-                            </form>
-                            
-                            <hr>
-                            <p class="mb-0">⬅️ <a class="custom-nav-link" onclick="showScreen('main-screen')">メイン画面に戻る</a></p>
-                        </div>
+        <!-- 【振り返り画面（旧ギャラリー）】 -->
+        <div id="page-reflection" class="app-page">
+            <!-- 新規メモ作成 -->
+            <div class="app-card">
+                <h2 class="h6 fw-bold mb-3" style="color: var(--grow-green-dark);"><i class="bi bi-journal-text me-2"></i>今日の振り返り</h2>
+                <form id="reflection-form" onsubmit="saveReflection(event)">
+                    <div class="mb-3">
+                        <label for="reflection-date" class="form-label small fw-bold text-muted">日付</label>
+                        <input type="date" id="reflection-date" class="form-control" required style="border-radius: 10px;">
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <label for="reflection-text" class="form-label small fw-bold text-muted">メモ・気づき</label>
+                        <textarea id="reflection-text" class="form-control" rows="4" placeholder="今日できたこと、反省点、メモなどを自由に書きましょう" required style="border-radius: 10px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-grow-primary w-100 py-2">
+                        <i class="bi bi-plus-circle me-1"></i>記録する
+                    </button>
+                </form>
+            </div>
+
+            <!-- 履歴一覧 -->
+            <h3 class="h6 fw-bold px-1 mb-3" style="color: var(--grow-green-dark);"><i class="bi bi-clock-history me-1"></i>これまでの記録</h3>
+            <div id="reflection-list">
+                <!-- JSで挿入 -->
             </div>
         </div>
-    </section>
 
-    <section id="gallery" class="p-5 bg-white">
-        <div class="container">
-            <h2>Gallery</h2>
-            <p>Gallery section</p>
+        <!-- 【コンタクト画面】 -->
+        <div id="page-contact" class="app-page">
+            <div class="app-card">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">お名前</label>
+                        <input type="text" class="form-control" placeholder="山田 太郎" style="border-radius: 10px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">メールアドレス</label>
+                        <input type="email" class="form-control" placeholder="name@example.com" style="border-radius: 10px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">メッセージ</label>
+                        <textarea class="form-control" rows="3" placeholder="内容を入力してください" style="border-radius: 10px;"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-grow-primary w-100 py-2">送信する</button>
+                </form>
+            </div>
         </div>
-    </section>
 
-    <section id="contact" class="p-5 bg-light">
-        <div class="container">
-            <h2>Contact</h2>
-            <p>Contact section</p>
-        </div>
-    </section>
-    
+        <!-- スマホ用ボトムナビゲーション -->
+        <nav class="bottom-nav">
+            <button class="bottom-nav-item active" onclick="switchTab('goal', 'Goal')">
+                <i class="bi bi-tree"></i><span>目標</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchTab('calendar', 'カレンダー')">
+                <i class="bi bi-calendar3"></i><span>カレンダー</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchTab('reflection', '振り返り')">
+                <i class="bi bi-pencil-square"></i><span>振り返り</span>
+            </button>
+            <button class="bottom-nav-item" onclick="switchTab('contact', 'コンタクト')">
+                <i class="bi bi-envelope"></i><span>連絡</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Bootstrap 5.3.3 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // グローバル変数で選択中の日付を管理
         let selectedDateStr = "";
+
+        // --- タブ切り替えロジック ---
+        function switchTab(tabId, title) {
+            // すべてのページを非アクティブに
+            document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
+            // 対象のページを表示
+            document.getElementById(`page-${tabId}`).classList.add('active');
+            
+            // ヘッダータイトルの更新
+            document.getElementById('page-title').innerText = title;
+
+            // ナビボタンのアクティブ状態切り替え
+            document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // カレンダータブを開いた時は再描画
+            if(tabId === 'calendar') {
+                createCalendar();
+            }
+            // 振り返りタブを開いた時の初期化
+            if(tabId === 'reflection') {
+                initReflectionTab();
+            }
+        }
 
         // --- カレンダー生成ロジック ---
         function createCalendar() {
@@ -224,14 +475,14 @@
 
             const firstDay = new Date(year, month, 1).getDay();
             const lastDate = new Date(year, month + 1, 0).getDate();
-
             const calendarBody = document.getElementById('calendar-body');
             calendarBody.innerHTML = '';
 
+            let todayStr = ""; 
             let date = 1;
+
             for (let i = 0; i < 6; i++) {
                 let row = document.createElement('tr');
-
                 for (let j = 0; j < 7; j++) {
                     let cell = document.createElement('td');
                     cell.classList.add('calendar-cell');
@@ -241,69 +492,60 @@
                     } else if (date > lastDate) {
                         cell.innerText = '';
                     } else {
-                        cell.innerText = date;
+                        const dateNum = document.createElement('span');
+                        dateNum.classList.add('calendar-date-num');
+                        dateNum.innerText = date;
+                        cell.appendChild(dateNum);
                         
-                        // YYYY-MM-DD 形式のキーを作成
                         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
                         cell.setAttribute('data-date', dateStr);
 
-                        // クリックイベントの追加
                         cell.onclick = function() {
                             openScheduleArea(dateStr);
                         };
 
-                        // 今日の日付ハイライト
                         if (date === now.getDate()) {
                             cell.classList.add('today');
+                            todayStr = dateStr; 
                         }
 
-                        // 予定がある場合はドットを表示
                         if (hasSchedule(dateStr)) {
                             const dot = document.createElement('div');
                             dot.classList.add('schedule-dot');
-                            dot.innerText = '⚫';
                             cell.appendChild(dot);
                         }
-
                         date++;
                     }
                     row.appendChild(cell);
                 }
                 calendarBody.appendChild(row);
+                if (date > lastDate) break;
+            }
 
-                if (date > lastDate) {
-                    break;
-                }
+            if (todayStr && !selectedDateStr) {
+                openScheduleArea(todayStr);
             }
         }
 
-        // --- スケジュール管理ロジック ---
-        
-        // 指定した日に予定があるか確認
         function hasSchedule(dateStr) {
             const schedules = JSON.parse(localStorage.getItem('calendarSchedules') || '{}');
             return schedules[dateStr] && schedules[dateStr].length > 0;
         }
 
-        // スケジュールエリアを開く
         function openScheduleArea(dateStr) {
             selectedDateStr = dateStr;
             const area = document.getElementById('schedule-area');
             area.classList.remove('d-none');
             
-            // タイトルの日付を整形して表示
             const [y, m, d] = dateStr.split('-');
-            document.getElementById('selected-date-title').innerText = `📅 ${parseInt(m)}月${parseInt(d)}日の予定`;
-            
+            document.getElementById('selected-date-title').innerHTML = `📅 ${parseInt(m)}月${parseInt(d)}日の予定`;
             displaySchedules();
         }
 
-        // スケジュールエリアを閉じる
         function closeScheduleArea() {
             document.getElementById('schedule-area').classList.add('d-none');
         }
 
-        // 予定一覧を表示する
         function displaySchedules() {
             const listContainer = document.getElementById('schedule-list');
             listContainer.innerHTML = '';
@@ -312,109 +554,177 @@
             const daySchedules = schedules[selectedDateStr] || [];
 
             if (daySchedules.length === 0) {
-                listContainer.innerHTML = '<p class="text-muted small">予定はありません。</p>';
+                listContainer.innerHTML = '<p class="text-muted small m-0 ps-1">予定はありません。</p>';
                 return;
             }
 
-            // 時間順にソート
             daySchedules.sort((a, b) => a.time.localeCompare(b.time));
 
             daySchedules.forEach((item, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('timeline-item', 'd-flex', 'justify-content-between', 'align-items-center');
                 itemDiv.innerHTML = `
-                    <div>
-                        <strong class="text-primary">${escapeHTML(item.time)}</strong> - <span>${escapeHTML(item.text)}</span>
+                    <div class="small text-truncate me-2">
+                        <strong style="color: var(--grow-green-light);" class="me-2">${escapeHTML(item.time)}</strong><span>${escapeHTML(item.text)}</span>
                     </div>
-                    <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="deleteSchedule(${index})">削除</button>
+                    <button class="btn btn-sm btn-link text-danger text-decoration-none p-0 small" onclick="deleteSchedule(${index})">削除</button>
                 `;
                 listContainer.appendChild(itemDiv);
             });
         }
 
-        // 予定を保存する
         function saveSchedule(event) {
             event.preventDefault();
             const timeInput = document.getElementById('schedule-time');
             const textInput = document.getElementById('schedule-text');
 
             const schedules = JSON.parse(localStorage.getItem('calendarSchedules') || '{}');
-            if (!schedules[selectedDateStr]) {
-                schedules[selectedDateStr] = [];
-            }
+            if (!schedules[selectedDateStr]) schedules[selectedDateStr] = [];
 
-            schedules[selectedDateStr].push({
-                time: timeInput.value,
-                text: textInput.value
-            });
-
+            schedules[selectedDateStr].push({ time: timeInput.value, text: textInput.value });
             localStorage.setItem('calendarSchedules', JSON.stringify(schedules));
 
-            // フォームのリセットと再描画
             textInput.value = '';
             timeInput.value = '';
             displaySchedules();
-            createCalendar(); // カレンダーの⚫マークを更新するため再生成
+            createCalendar(); 
         }
 
-        // 予定を削除する
         function deleteSchedule(index) {
             if (!confirm('この予定を削除しますか？')) return;
-
             const schedules = JSON.parse(localStorage.getItem('calendarSchedules') || '{}');
             if (schedules[selectedDateStr]) {
                 schedules[selectedDateStr].splice(index, 1);
-                
-                // 空になったら日付のキーごと削除
-                if (schedules[selectedDateStr].length === 0) {
-                    delete schedules[selectedDateStr];
-                }
+                if (schedules[selectedDateStr].length === 0) delete schedules[selectedDateStr];
             }
-
             localStorage.setItem('calendarSchedules', JSON.stringify(schedules));
             displaySchedules();
-            createCalendar(); // カレンダーの⚫マークを更新するため再生成
+            createCalendar(); 
         }
 
+        // --- 振り返り（メモ帳）ロジック ---
+        function initReflectionTab() {
+            const today = new Date();
+            const localDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            document.getElementById('reflection-date').value = localDate;
+            displayReflections();
+        }
 
-        // --- リアルタイム時計ロジック ---
+        // --- 保存のバリデーションをアップデート ---
+        function saveReflection(event) {
+            event.preventDefault();
+            const dateInput = document.getElementById('reflection-date');
+            const textInput = document.getElementById('reflection-text');
+
+            const id = new Date().getTime();
+            const reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+            
+            reflections.push({
+                id: id,
+                date: dateInput.value,
+                text: textInput.value
+            });
+
+            reflections.sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+            localStorage.setItem('reflections', JSON.stringify(reflections));
+
+            textInput.value = '';
+            displayReflections();
+        }
+
+        function displayReflections() {
+            const listContainer = document.getElementById('reflection-list');
+            listContainer.innerHTML = '';
+
+            const reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+
+            if (reflections.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-muted text-center small p-4 border border-dashed rounded bg-light opacity-75" style="border-color: var(--grow-earth) !important;">
+                        振り返りはまだありません。今日の気づきを記録してみましょう。
+                    </div>
+                `;
+                return;
+            }
+
+            reflections.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('app-card');
+                
+                const [y, m, d] = item.date.split('-');
+                const formattedDate = `${parseInt(m)}月${parseInt(d)}日`;
+
+                card.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <span class="badge grow-badge fw-bold">${formattedDate}</span>
+                        <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="deleteReflection(${item.id})">削除</button>
+                    </div>
+                    <p class="small text-dark mb-0" style="white-space: pre-wrap; word-break: break-all;">${escapeHTML(item.text)}</p>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function deleteReflection(id) {
+            if (!confirm('この振り返りを削除しますか？')) return;
+            let reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+            reflections = reflections.filter(item => item.id !== id);
+            localStorage.setItem('reflections', JSON.stringify(reflections));
+            displayReflections();
+        }
+
+        // --- 時計表示 ---
         function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            
-            document.getElementById('current-time').innerText = `現在時刻: ${hours}:${minutes}:${seconds}`;
+            document.getElementById('current-time').innerHTML = `<i class="bi bi-clock me-1"></i>${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         }
 
-        // --- 目標管理画面切り替え＆データ処理ロジック ---
+        // --- 目標設定・夢設定関連 ---
         function showScreen(screenId) {
             document.getElementById('main-screen').classList.add('hidden');
             document.getElementById('target-screen').classList.add('hidden');
             document.getElementById(screenId).classList.remove('hidden');
 
             if (screenId === 'target-screen') {
+                document.getElementById('dream-title').value = localStorage.getItem('userDreamTitle') || '';
                 document.getElementById('goal-title').value = localStorage.getItem('userGoalTitle') || '';
                 document.getElementById('goal-detail').value = localStorage.getItem('userGoalDetail') || '';
             }
         }
 
         function displayGoal() {
+            const dreamTitle = localStorage.getItem('userDreamTitle');
             const title = localStorage.getItem('userGoalTitle');
             const detail = localStorage.getItem('userGoalDetail');
-            const displayArea = document.getElementById('goal-display-area');
+            
+            // 1. 夢・人生の目標の表示
+            const dreamArea = document.getElementById('dream-display-area');
+            if (dreamTitle) {
+                dreamArea.innerHTML = `
+                    <div class="text-start p-3 rounded border-start border-warning border-3" style="background-color: #fcfbf7; border-left-color: var(--grow-yellow) !important; box-shadow: inset 0 0 4px rgba(141,123,104,0.05);">
+                        <p class="fs-6 fw-bold mb-0 text-dark">${escapeHTML(dreamTitle)}</p>
+                    </div>
+                `;
+            } else {
+                dreamArea.innerHTML = `
+                    <div class="text-muted small p-4 border border-dashed rounded bg-light opacity-75" style="border-color: var(--grow-earth) !important;">
+                        まだ夢・人生の目標が設定されていません。
+                    </div>
+                `;
+            }
 
+            // 2. 今日の目標の表示
+            const displayArea = document.getElementById('goal-display-area');
             if (title) {
                 displayArea.innerHTML = `
-                    <div class="display-goal-box">
-                        <h5 class="fw-bold text-success mb-1">🎯 現在の目標</h5>
-                        <p class="fs-5 fw-bold mb-2">${escapeHTML(title)}</p>
-                        ${detail ? `<p class="text-muted small mb-0" style="white-space: pre-wrap;">${escapeHTML(detail)}</p>` : ''}
+                    <div class="text-start p-3 rounded border-start border-success border-3" style="background-color: #fcfbf7; border-left-color: var(--grow-green-light) !important; box-shadow: inset 0 0 4px rgba(141,123,104,0.05);">
+                        <p class="fs-6 fw-bold mb-1 text-dark">${escapeHTML(title)}</p>
+                        ${detail ? `<p class="text-muted small mb-0 border-top pt-2 mt-2" style="white-space: pre-wrap;">${escapeHTML(detail)}</p>` : ''}
                     </div>
                 `;
             } else {
                 displayArea.innerHTML = `
-                    <div class="text-muted small p-3 border border-dashed rounded text-center">
+                    <div class="text-muted small p-4 border border-dashed rounded bg-light opacity-75" style="border-color: var(--grow-earth) !important;">
                         まだ目標が設定されていません。
                     </div>
                 `;
@@ -423,31 +733,21 @@
 
         function saveGoal(event) {
             event.preventDefault();
-
-            const title = document.getElementById('goal-title').value;
-            const detail = document.getElementById('goal-detail').value;
-
-            localStorage.setItem('userGoalTitle', title);
-            localStorage.setItem('userGoalDetail', detail);
-
-            alert('目標を保存しました！');
-            
+            localStorage.setItem('userDreamTitle', document.getElementById('dream-title').value);
+            localStorage.setItem('userGoalTitle', document.getElementById('goal-title').value);
+            localStorage.setItem('userGoalDetail', document.getElementById('goal-detail').value);
             displayGoal();
             showScreen('main-screen');
         }
 
-        // 安全にテキストを表示するためのエスケープ関数
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
         }
 
-        // --- ページ読み込み時の初期化 ---
         window.onload = function() {
-            createCalendar();
+            createCalendar(); 
             updateClock();
-            setInterval(updateClock, 1000);
+            setInterval(updateClock, 60000);
             displayGoal();
         };
     </script>
